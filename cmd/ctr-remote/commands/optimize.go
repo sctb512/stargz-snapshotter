@@ -31,6 +31,7 @@ import (
 	"github.com/containerd/containerd/cmd/ctr/commands"
 	"github.com/containerd/containerd/content"
 	"github.com/containerd/containerd/images/converter"
+	"github.com/containerd/containerd/log"
 	"github.com/containerd/containerd/platforms"
 	"github.com/containerd/stargz-snapshotter/analyzer"
 	"github.com/containerd/stargz-snapshotter/estargz"
@@ -231,6 +232,7 @@ func analyze(ctx context.Context, clicontext *cli.Context, client *containerd.Cl
 	if clicontext.Bool("wait-on-signal") && clicontext.Bool("terminal") {
 		return "", nil, nil, fmt.Errorf("wait-on-signal can't be used with terminal flag")
 	}
+
 	if clicontext.Bool("wait-on-signal") {
 		aOpts = append(aOpts, analyzer.WithWaitOnSignal())
 	} else {
@@ -251,13 +253,16 @@ func analyze(ctx context.Context, clicontext *cli.Context, client *containerd.Cl
 	if err != nil {
 		return "", nil, nil, err
 	}
+	log.G(ctx).Debugf("[abin] recordOut %v", recordOut)
 
 	// Parse record file
 	srcImg, err := is.Get(ctx, srcRef)
 	if err != nil {
 		return "", nil, nil, err
 	}
+	log.G(ctx).Debugf("[abin] srcImg %v", srcImg)
 	manifestDesc, err := containerdutil.ManifestDesc(ctx, cs, srcImg.Target, platforms.DefaultStrict())
+	log.G(ctx).Debugf("[abin] manifestDesc %v", manifestDesc)
 	if err != nil {
 		return "", nil, nil, err
 	}

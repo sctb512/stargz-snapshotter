@@ -222,6 +222,7 @@ func Analyze(ctx context.Context, client *containerd.Client, ref string, opts ..
 			if err := rc.Record(path); err != nil {
 				log.G(ctx).WithError(err).Debugf("failed to record %q", path)
 			}
+			log.G(ctx).Debugf("[abin] record path %s", path)
 			successCount++
 		}
 	}()
